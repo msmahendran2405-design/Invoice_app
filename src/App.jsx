@@ -15,6 +15,7 @@ import PaymentList from './components/Payments/PaymentList';
 import Reports from './components/Reports/Reports';
 import Settings from './components/Settings/Settings';
 import UserManagement from './components/Users/UserManagement';
+import DatabaseSettings from './components/Admin/DatabaseSettings';
 import Profile from './components/Profile/Profile';
 import HistoryRecords from './components/History/HistoryRecords';
 import ServiceOrderList from './components/Services/ServiceOrderList';
@@ -68,6 +69,12 @@ function AppRoutes() {
         <Route path="users" element={
           <AdminRoute>
             <UserManagement />
+          </AdminRoute>
+        } />
+        {/* Admin Only Route: Central Google Sheets Database Management */}
+        <Route path="database" element={
+          <AdminRoute>
+            <DatabaseSettings />
           </AdminRoute>
         } />
 

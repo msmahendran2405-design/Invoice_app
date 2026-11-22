@@ -27,7 +27,8 @@ const SHEET_COLUMNS = {
   ],
   Users: [
     'id', 'company_id', 'username', 'password_hash', 'role', 'full_name', 'email', 'phone',
-    'avatar_color', 'is_active', 'created_at', 'updated_at'
+    'company_name', 'gstin', 'address', 'city', 'state', 'upi_id', 'invoice_prefix',
+    'subscription_valid_until', 'avatar_color', 'is_active', 'created_at', 'updated_at'
   ],
   Customers: [
     'id', 'company_id', 'name', 'phone', 'alt_phone', 'email', 'company', 'address', 'city',
