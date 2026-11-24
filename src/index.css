@@ -3,8 +3,21 @@
 @tailwind utilities;
 
 @layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+
   body {
     @apply bg-gray-50 text-gray-900;
+    overscroll-behavior-y: none;
+    -webkit-font-smoothing: antialiased;
+  }
+  
+  /* Touch target safety for mobile inputs & buttons */
+  button, a {
+    touch-action: manipulation;
   }
   
   * {

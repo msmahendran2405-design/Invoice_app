@@ -45,7 +45,7 @@ export default function Sidebar() {
     : `${user?.city || currentCompany?.city || 'HQ'} • ${user?.gstin ? 'GSTIN Active' : 'Invoice & Repair'}`;
 
   return (
-    <aside className={`${collapsed ? 'w-20' : 'w-64'} bg-slate-900 border-r border-slate-800 h-screen flex flex-col transition-all duration-300 ease-in-out relative flex-shrink-0 z-30`}>
+    <aside className={`${collapsed ? 'w-20' : 'w-64'} hidden md:flex bg-slate-900 border-r border-slate-800 h-screen flex-col transition-all duration-300 ease-in-out relative flex-shrink-0 z-30`}>
       {/* Brand Header */}
       <div className={`flex items-center ${collapsed ? 'justify-center' : 'px-4'} h-16 border-b border-slate-800 bg-slate-950/60`}>
         <div className="flex items-center gap-3 min-w-0">
