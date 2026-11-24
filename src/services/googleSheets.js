@@ -8,6 +8,7 @@
  */
 
 const SHEETS_CONFIG_KEY = 'google_sheets_config';
+import apiClient from './apiClient';
 
 // Default configuration
 const DEFAULT_CONFIG = {
@@ -164,78 +165,37 @@ class GoogleSheetsDB {
       return this.cache[sheetName];
     }
 
-    // Try Google Apps Script Web App first if configured
-    if (this.config.webAppUrl) {
-      try {
-        const url = `${this.config.webAppUrl}?action=read&sheet=${encodeURIComponent(sheetName)}`;
-        const res = await fetch(url);
-        if (res.ok) {
-          const json = await res.json();
-          if (Array.isArray(json.data)) {
-            this.setCache(sheetName, json.data);
-            this.saveLocalData(sheetName, json.data);
-            return json.data;
-          }
-        }
-      } catch (err) {
-        console.warn('Google Apps Script fetch error, falling back:', err);
+    // Call secure API layer (JWT-authenticated)
+    try {
+      const res = await apiClient.get(`/data/${encodeURIComponent(sheetName)}`);
+      if (res && res.success && Array.isArray(res.data)) {
+        this.setCache(sheetName, res.data);
+        this.saveLocalData(sheetName, res.data);
+        return res.data;
       }
+    } catch (err) {
+      console.warn(`[API Layer] Error fetching /api/data/${sheetName}, checking local cache:`, err.message);
     }
 
-    // Try Google Sheets REST API v4 if configured
-    if (this.config.spreadsheetId && this.config.apiKey) {
-      try {
-        const url = `https://sheets.googleapis.com/v4/spreadsheets/${this.config.spreadsheetId}/values/${sheetName}?key=${this.config.apiKey}`;
-        const response = await fetch(url);
-        if (response.ok) {
-          const data = await response.json();
-          const rows = data.values || [];
-          if (rows.length > 0) {
-            const headers = rows[0];
-            const records = rows.slice(1).map((row) => {
-              const record = {};
-              headers.forEach((header, i) => {
-                record[header] = row[i] || '';
-              });
-              return record;
-            });
-            this.setCache(sheetName, records);
-            this.saveLocalData(sheetName, records);
-            return records;
-          }
-        }
-      } catch (err) {
-        console.warn('Google Sheets API v4 fetch error, falling back:', err);
-      }
-    }
-
-    // Fallback to local data
+    // Graceful offline fallback
     const local = this.getLocalData(sheetName);
     this.setCache(sheetName, local);
     return local;
   }
 
   async appendRow(sheetName, data) {
-    // Ensure ID
-    const local = this.getLocalData(sheetName);
-    if (!data.id) {
-      data.id = this.generateId(local);
-    }
-
-    // Always update local storage first for instant responsiveness
+    // Save to local storage for instantaneous optimistic UI
     const savedLocal = this.appendLocalData(sheetName, data);
 
-    // Sync to Google Apps Script Web App if configured
-    if (this.config.webAppUrl) {
-      try {
-        await fetch(this.config.webAppUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'append', sheet: sheetName, data }),
-        });
-      } catch (e) {
-        console.warn('Failed to sync append to Google Apps Script:', e);
+    // Call secure API layer (JWT-authenticated)
+    try {
+      const res = await apiClient.post(`/data/${encodeURIComponent(sheetName)}`, data);
+      if (res && res.success && res.data) {
+        this.clearCache();
+        return res.data;
       }
+    } catch (err) {
+      console.warn(`[API Layer] Error posting to /api/data/${sheetName}:`, err.message);
     }
 
     this.clearCache();
@@ -245,16 +205,15 @@ class GoogleSheetsDB {
   async updateRow(sheetName, id, data) {
     const updated = this.updateLocalData(sheetName, id, data);
 
-    if (this.config.webAppUrl) {
-      try {
-        await fetch(this.config.webAppUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'update', sheet: sheetName, id, data }),
-        });
-      } catch (e) {
-        console.warn('Failed to sync update to Google Apps Script:', e);
+    // Call secure API layer (JWT-authenticated)
+    try {
+      const res = await apiClient.put(`/data/${encodeURIComponent(sheetName)}/${id}`, data);
+      if (res && res.success && res.data) {
+        this.clearCache();
+        return res.data;
       }
+    } catch (err) {
+      console.warn(`[API Layer] Error updating /api/data/${sheetName}/${id}:`, err.message);
     }
 
     this.clearCache();
@@ -264,16 +223,11 @@ class GoogleSheetsDB {
   async deleteRow(sheetName, id) {
     const result = this.deleteLocalData(sheetName, id);
 
-    if (this.config.webAppUrl) {
-      try {
-        await fetch(this.config.webAppUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify({ action: 'delete', sheet: sheetName, id }),
-        });
-      } catch (e) {
-        console.warn('Failed to sync delete to Google Apps Script:', e);
-      }
+    // Call secure API layer (JWT-authenticated)
+    try {
+      await apiClient.delete(`/data/${encodeURIComponent(sheetName)}/${id}`);
+    } catch (err) {
+      console.warn(`[API Layer] Error deleting /api/data/${sheetName}/${id}:`, err.message);
     }
 
     this.clearCache();
@@ -1180,6 +1134,15 @@ class GoogleSheetsDB {
   }
 
   async getNextInvoiceNumber() {
+    try {
+      const res = await apiClient.get('/data/next-invoice-number');
+      if (res && res.invoiceNumber) {
+        return res.invoiceNumber;
+      }
+    } catch (e) {
+      console.warn('API getNextInvoiceNumber failed, using local generation:', e.message);
+    }
+
     const settings = await this.fetchSheet(SHEET_NAMES.SETTINGS);
     const prefix = settings.find(s => s.key === 'invoice_prefix')?.value || 'INV-';
     const nextNum = settings.find(s => s.key === 'invoice_next_number')?.value || '1004';

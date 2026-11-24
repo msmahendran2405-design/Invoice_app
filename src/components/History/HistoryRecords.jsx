@@ -39,10 +39,27 @@ export default function HistoryRecords() {
         db.fetchSheet(SHEET_NAMES.CUSTOMERS, true),
       ]);
 
-      // Filter invoices for this company/user
-      const validInvoices = invData.filter(i => i.id);
+      // Filter invoices and customers for this company/client
+      const validInvoices = invData.filter(i => {
+        if (!i.id) return false;
+        if (isAdmin) return true;
+        return (
+          (i.company_id && String(i.company_id) === String(activeCompanyId || user?.company_id)) ||
+          (i.created_by && String(i.created_by) === String(user?.id))
+        );
+      });
+
+      const validCustomers = custData.filter(c => {
+        if (!c.id) return false;
+        if (isAdmin) return true;
+        return (
+          (c.company_id && String(c.company_id) === String(activeCompanyId || user?.company_id)) ||
+          (c.created_by && String(c.created_by) === String(user?.id))
+        );
+      });
+
       setInvoices(validInvoices);
-      setCustomers(custData.filter(c => c.id));
+      setCustomers(validCustomers);
     } catch (err) {
       console.error('Failed to load history data:', err);
       toast.error('Failed to load history records');

@@ -65,18 +65,18 @@ function AppRoutes() {
       }>
         <Route index element={<Navigate to={defaultLanding} replace />} />
         
-        {/* Admin Only Route: Client User Management */}
+        {/* Admin Only Routes: Client User Management & Google Sheet DB */}
         <Route path="users" element={
           <AdminRoute>
             <UserManagement />
           </AdminRoute>
         } />
-        {/* Admin Only Route: Central Google Sheets Database Management */}
-        <Route path="database" element={
+        <Route path="admin/database" element={
           <AdminRoute>
             <DatabaseSettings />
           </AdminRoute>
         } />
+        <Route path="database" element={<Navigate to="/admin/database" replace />} />
 
         {/* Client Only Routes: 5 Core Shop Pages */}
         <Route path="dashboard" element={

@@ -3,9 +3,9 @@ import { NavLink, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useSettings } from '../../contexts/SettingsContext';
 import {
-  LayoutDashboard, Users, Wrench, FileText, Settings,
+  LayoutDashboard, Users, Wrench, FileText, Settings, Database,
   LogOut, ChevronLeft, ChevronRight, Smartphone, Plus,
-  ShieldAlert, History, Clock, UserCog, Building, Database
+  ShieldAlert, History, Clock, UserCog, Building
 } from 'lucide-react';
 
 export default function Sidebar() {
@@ -20,12 +20,12 @@ export default function Sidebar() {
   };
 
   // Strictly separated roles:
-  // Admin is ONLY for creating and managing client accounts & Google Sheets DB
+  // Admin manages client accounts and Google Sheet DB connection
   // Client has the simplified 5 shop pages
   const navItems = isAdmin
     ? [
         { path: '/users', icon: UserCog, label: 'Client Accounts' },
-        { path: '/database', icon: Database, label: 'Google Sheets DB' },
+        { path: '/admin/database', icon: Database, label: 'Google Sheet DB' },
       ]
     : [
         { path: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },

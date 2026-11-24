@@ -5,6 +5,7 @@
  */
 
 import db, { SHEET_NAMES } from './googleSheets';
+import apiClient from './apiClient';
 
 const AUTH_SESSION_KEY = 'invoice_app_session';
 
@@ -65,42 +66,51 @@ class AuthService {
   }
 
   async login(username, password) {
-    const users = await db.fetchSheet(SHEET_NAMES.USERS);
-    // Support matching by username or email for flexibility
-    const cleanUsername = (username || '').trim().toLowerCase();
-    const user = users.find(u => 
-      (u.username?.toLowerCase() === cleanUsername || u.email?.toLowerCase() === cleanUsername) && 
-      u.is_active === 'true'
-    );
-    
-    if (!user) {
-      throw new Error('Invalid username or password');
-    }
-
-    const passwordHash = this.simpleHash(password);
-    
-    // Check if it's default accounts
-    if (user.password_hash === '$2a$10$defaulthash') {
-      const defaultPasswords = {
-        'admin@invoice.com': 'mahendran@123',
-        admin: 'mahendran@123',
-        client1: 'client123',
-      };
-      if (
-        (defaultPasswords[user.username] && password === defaultPasswords[user.username]) ||
-        (defaultPasswords[cleanUsername] && password === defaultPasswords[cleanUsername])
-      ) {
-        this.saveSession(user);
-        return user;
+    try {
+      const res = await apiClient.post('/auth/login', { username, password });
+      if (res && res.token) {
+        apiClient.setToken(res.token);
       }
+      if (res && res.user) {
+        this.saveSession(res.user);
+        return res.user;
+      }
+    } catch (apiErr) {
+      console.warn('API login failed, checking fallback:', apiErr.message);
+      // If server unreachable or error, try local check as graceful offline fallback
+      try {
+        const users = await db.fetchSheet(SHEET_NAMES.USERS);
+        const cleanUsername = (username || '').trim().toLowerCase();
+        const user = users.find(u => 
+          (u.username?.toLowerCase() === cleanUsername || u.email?.toLowerCase() === cleanUsername) && 
+          u.is_active !== 'false'
+        );
+        if (user) {
+          const defaultPasswords = {
+            'admin@invoice.com': 'mahendran@123',
+            admin: 'mahendran@123',
+            client1: 'client123',
+          };
+          if (
+            (defaultPasswords[user.username] && password === defaultPasswords[user.username]) ||
+            (defaultPasswords[cleanUsername] && password === defaultPasswords[cleanUsername]) ||
+            user.password === password
+          ) {
+            this.saveSession(user);
+            return user;
+          }
+        }
+      } catch (fbErr) {
+        // Fall through
+      }
+      throw new Error(apiErr.message || 'Invalid username or password');
     }
+    throw new Error('Invalid username or password');
+  }
 
-    if (user.password_hash !== passwordHash) {
-      throw new Error('Invalid username or password');
-    }
-
-    this.saveSession(user);
-    return user;
+  logout() {
+    apiClient.clearToken();
+    this.clearSession();
   }
 
   async register(userData) {

@@ -54,8 +54,15 @@ export default function ServiceOrderList() {
     setLoading(true);
     try {
       const data = await db.fetchSheet(SHEET_NAMES.INVOICES, true);
-      // Map invoices representing service jobs
-      const serviceData = data.filter(inv => inv.id && (inv.device_model || inv.repair_status));
+      // Map invoices representing service jobs for this company/client
+      const serviceData = data.filter(inv => {
+        if (!inv.id || (!inv.device_model && !inv.repair_status)) return false;
+        if (isAdmin) return true;
+        return (
+          (inv.company_id && String(inv.company_id) === String(activeCompanyId || user?.company_id)) ||
+          (inv.created_by && String(inv.created_by) === String(user?.id))
+        );
+      });
       setServiceOrders(serviceData);
     } catch {
       toast.error('Failed to load service jobs');

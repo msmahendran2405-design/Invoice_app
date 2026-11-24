@@ -40,7 +40,10 @@ export default function InvoiceList() {
       let data = await db.fetchSheet(SHEET_NAMES.INVOICES, true);
       data = data.filter(inv => inv.id);
       if (user.role !== 'admin') {
-        data = data.filter(inv => inv.created_by === user.id);
+        data = data.filter(inv => 
+          (inv.company_id && String(inv.company_id) === String(user.company_id)) ||
+          (inv.created_by && String(inv.created_by) === String(user.id))
+        );
       }
       setInvoices(data);
     } catch (error) {

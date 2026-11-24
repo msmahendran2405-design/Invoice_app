@@ -13,6 +13,16 @@ export default defineConfig({
   server: {
     host: '127.0.0.1',
     port: 5173,
+    watch: {
+      ignored: ['**/server/**', '**/.env*'],
+    },
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:5000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
   },
   build: {
     outDir: 'dist',

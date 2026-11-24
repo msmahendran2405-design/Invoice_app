@@ -38,28 +38,18 @@ export default function Header() {
     return 'Good Evening';
   };
 
-  const getAdminTitle = () => {
-    if (location.pathname.startsWith('/database')) return 'Google Sheets Central Database Management';
-    return 'Client Accounts & Licensing';
-  };
-
-  const getAdminSubtitle = () => {
-    if (location.pathname.startsWith('/database')) return 'Software Owner Portal • Google Apps Script Cloud Engine';
-    return 'Software Owner Portal • Create & Manage Clients';
-  };
-
   return (
     <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4 sm:px-6 flex-shrink-0 z-10 shadow-xs">
       <div className="flex items-center gap-3 min-w-0">
         <div className="min-w-0">
           <h2 className="text-lg font-bold text-gray-900 tracking-tight truncate">
-            {isAdmin ? getAdminTitle() : getPageTitle()}
+            {isAdmin ? 'Client Accounts & Licensing' : getPageTitle()}
           </h2>
           {!isAdmin && location.pathname === '/dashboard' && (
             <p className="text-xs text-gray-500 truncate">{getGreeting()}, {user?.full_name?.split(' ')[0]}! 👋</p>
           )}
           {isAdmin && (
-            <p className="text-xs text-purple-600 font-medium">{getAdminSubtitle()}</p>
+            <p className="text-xs text-purple-600 font-medium">Software Owner Portal • Create & Manage Clients</p>
           )}
         </div>
         {!isAdmin && (

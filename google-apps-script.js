@@ -9,13 +9,11 @@
  * 3. Replace all code in the editor with this script
  * 4. Click the blue "Deploy" button at top right > "New deployment"
  * 5. Select type: "Web app"
- *    - Description: "Multi-Company Invoice ERP Database"
+ *    - Description: "Invoice ERP Database"
  *    - Execute as: "Me"
  *    - Who has access: "Anyone"
  * 6. Click "Deploy", authorize permissions, and copy the Web App URL!
- * 7. Paste that Web App URL in your Invoice App -> Settings -> Google Sheets tab!
- * 
- * Auto-initialization: Creates all 13 normalized tables and frozen header rows automatically.
+ * 7. Paste that Web App URL in your Admin Database API page!
  */
 
 const SHEET_COLUMNS = {
@@ -46,9 +44,6 @@ const SHEET_COLUMNS = {
     'technician_name', 'intake_date', 'expected_delivery', 'completion_date', 'delivery_date',
     'status', 'labor_charges', 'parts_charges', 'additional_charges', 'discount_amount',
     'tax_amount', 'total_estimated', 'advance_paid', 'balance_amount', 'created_by', 'created_at', 'updated_at'
-  ],
-  ServiceStatusHistory: [
-    'id', 'company_id', 'service_order_id', 'from_status', 'to_status', 'notes', 'updated_by', 'timestamp'
   ],
   Invoices: [
     'id', 'company_id', 'invoice_number', 'invoice_type', 'invoice_date', 'due_date',
@@ -100,32 +95,36 @@ function getOrCreateSheet(ss, sheetName) {
 
 function doGet(e) {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const params = e.parameter || {};
-  const sheetName = params.sheet || 'Invoices';
-  const companyId = params.company_id || '';
+  const params = e ? e.parameter || {} : {};
+  const action = params.action || '';
+  const sheetName = params.sheet || '';
+
+  // Ping / healthcheck action
+  if (action === 'ping' || !sheetName) {
+    return responseJSON({
+      status: 'success',
+      message: 'Google Sheets Database API connected successfully!',
+      spreadsheet: ss.getName()
+    });
+  }
 
   try {
     const sheet = getOrCreateSheet(ss, sheetName);
     const data = sheet.getDataRange().getValues();
 
     if (data.length <= 1) {
-      return responseJSON({ status: 'success', data: [] });
+      return responseJSON({ status: 'success', sheet: sheetName, count: 0, data: [] });
     }
 
     const headers = data[0];
     const records = [];
     for (let i = 1; i < data.length; i++) {
       const row = data[i];
-      if (!row[0] && row[0] !== 0) continue; // skip blank rows
+      if (!row[0] && row[0] !== 0) continue;
       const item = {};
       headers.forEach((h, idx) => {
         item[h] = row[idx] !== undefined ? String(row[idx]) : '';
       });
-
-      // If company_id is requested and column exists, filter by tenant
-      if (companyId && item.company_id && String(item.company_id) !== String(companyId)) {
-        continue;
-      }
       records.push(item);
     }
 

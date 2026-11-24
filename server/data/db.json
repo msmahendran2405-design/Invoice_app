@@ -1,0 +1,256 @@
+{
+  "Companies": [
+    {
+      "id": "1",
+      "name": "Sai Ram Mobile Care & Service Center",
+      "gstin": "33AAAAA0000A1Z5",
+      "address": "Shop No. 14, Ground Floor, City Mobile Complex, 1st Cross, Market Road",
+      "city": "Coimbatore",
+      "state": "Tamil Nadu",
+      "state_code": "33",
+      "pincode": "641012",
+      "email": "service@sairammobile.in",
+      "phone": "+91 98765 43210",
+      "invoice_prefix": "MOB-",
+      "upi_id": "sairammobile@upi",
+      "is_active": "true",
+      "subscription_plan": "Enterprise",
+      "subscription_expiry": "2028-12-31",
+      "created_at": "2026-11-22T10:57:41.770Z",
+      "updated_at": "2026-11-22T10:57:41.772Z"
+    },
+    {
+      "id": "2",
+      "name": "Apex Smartphone Solutions",
+      "gstin": "29ABCDE1234F1Z5",
+      "address": "42, Brigade Road, Commercial Street Junction",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "state_code": "29",
+      "pincode": "560001",
+      "email": "support@apexsolutions.in",
+      "phone": "+91 98800 11223",
+      "invoice_prefix": "APX-",
+      "upi_id": "apexsolutions@upi",
+      "is_active": "true",
+      "subscription_plan": "Professional",
+      "subscription_expiry": "2027-12-31",
+      "created_at": "2026-11-22T10:57:41.772Z",
+      "updated_at": "2026-11-22T10:57:41.772Z"
+    }
+  ],
+  "Users": [
+    {
+      "id": "1",
+      "company_id": "1",
+      "username": "admin@invoice.com",
+      "password": "mahendran@123",
+      "role": "admin",
+      "full_name": "Mahendran (Admin & Owner)",
+      "email": "admin@invoice.com",
+      "phone": "+91 98765 43210",
+      "company_name": "Master Invoice Software ERP",
+      "is_active": "true",
+      "subscription_valid_until": "2099-12-31",
+      "created_at": "2026-11-22T10:57:41.772Z",
+      "updated_at": "2026-11-22T10:57:41.772Z"
+    },
+    {
+      "id": "2",
+      "company_id": "1",
+      "username": "client1",
+      "password": "client123",
+      "role": "client",
+      "full_name": "Suresh Kumar",
+      "email": "client1@company.com",
+      "phone": "+91 98401 22334",
+      "company_name": "Sai Ram Mobile Care & Service Center",
+      "gstin": "33AAAAA0000A1Z5",
+      "address": "Shop No. 14, City Mobile Complex, Market Road",
+      "city": "Coimbatore",
+      "state": "Tamil Nadu",
+      "upi_id": "sairammobile@upi",
+      "invoice_prefix": "MOB-",
+      "subscription_valid_until": "2027-11-21",
+      "is_active": "true",
+      "created_at": "2026-11-22T10:57:41.772Z",
+      "updated_at": "2026-11-22T10:57:41.772Z"
+    }
+  ],
+  "Customers": [
+    {
+      "id": "1",
+      "company_id": "1",
+      "name": "Ramesh Kumar",
+      "phone": "+91 98401 23456",
+      "email": "ramesh.k@gmail.com",
+      "city": "Coimbatore",
+      "state": "Tamil Nadu",
+      "created_by": "2",
+      "created_at": "2026-11-22T10:57:41.772Z"
+    },
+    {
+      "id": "2",
+      "company_id": "1",
+      "name": "Priya Sharma",
+      "phone": "+91 97910 87654",
+      "email": "priya.sharma@yahoo.com",
+      "city": "Chennai",
+      "state": "Tamil Nadu",
+      "created_by": "2",
+      "created_at": "2026-11-22T10:57:41.772Z"
+    }
+  ],
+  "Invoices": [
+    {
+      "id": "1",
+      "company_id": "1",
+      "invoice_number": "MOB-1001",
+      "customer_name": "Ramesh Kumar",
+      "customer_phone": "+91 98401 23456",
+      "device_model": "Redmi Note 12 Pro",
+      "issue_reported": "Display combo touch broken",
+      "repair_status": "Ready for Pickup",
+      "invoice_date": "2026-11-22",
+      "subtotal": "1650.00",
+      "tax_amount": "0.00",
+      "total": "1650.00",
+      "status": "paid",
+      "payment_mode": "Cash",
+      "created_by": "2",
+      "created_at": "2026-11-22T10:57:41.772Z",
+      "updated_at": "2026-11-22T10:57:41.772Z"
+    }
+  ],
+  "InvoiceItems": [],
+  "ServiceOrders": [],
+  "Products": [],
+  "Payments": [],
+  "Expenses": [],
+  "Settings": [
+    {
+      "id": "1",
+      "key": "invoice_prefix",
+      "value": "MOB-",
+      "category": "invoice"
+    },
+    {
+      "id": "2",
+      "key": "invoice_next_number",
+      "value": "1002",
+      "category": "invoice"
+    },
+    {
+      "id": "3",
+      "key": "currency",
+      "value": "INR",
+      "category": "general"
+    },
+    {
+      "id": "4",
+      "key": "currency_symbol",
+      "value": "₹",
+      "category": "general"
+    },
+    {
+      "key": "company_name",
+      "value": "Sai Ram Mobile Care & Service Center",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.446Z",
+      "created_at": "2026-11-23T17:01:29.446Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "5"
+    },
+    {
+      "key": "company_name",
+      "value": "Sai Ram Mobile Care & Service Center",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.506Z",
+      "created_at": "2026-11-23T17:01:29.506Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "6"
+    },
+    {
+      "key": "company_tagline",
+      "value": "Smartphone Display, Battery & Motherboard Specialists",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.606Z",
+      "created_at": "2026-11-23T17:01:29.606Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "7"
+    },
+    {
+      "key": "company_tagline",
+      "value": "Smartphone Display, Battery & Motherboard Specialists",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.629Z",
+      "created_at": "2026-11-23T17:01:29.629Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "8"
+    },
+    {
+      "key": "business_type",
+      "value": "mobile_service",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.737Z",
+      "created_at": "2026-11-23T17:01:29.737Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "9"
+    },
+    {
+      "key": "business_type",
+      "value": "mobile_service",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.746Z",
+      "created_at": "2026-11-23T17:01:29.746Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "10"
+    },
+    {
+      "key": "allow_custom_items",
+      "value": "true",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.779Z",
+      "created_at": "2026-11-23T17:01:29.779Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "11"
+    },
+    {
+      "key": "allow_custom_items",
+      "value": "true",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.787Z",
+      "created_at": "2026-11-23T17:01:29.787Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "12"
+    },
+    {
+      "key": "allow_custom_price",
+      "value": "true",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.817Z",
+      "created_at": "2026-11-23T17:01:29.817Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "13"
+    },
+    {
+      "key": "allow_custom_price",
+      "value": "true",
+      "category": "general",
+      "updated_at": "2026-11-23T17:01:29.824Z",
+      "created_at": "2026-11-23T17:01:29.824Z",
+      "company_id": "1",
+      "created_by": "2",
+      "id": "14"
+    }
+  ]
+}

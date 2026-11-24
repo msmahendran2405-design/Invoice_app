@@ -41,11 +41,19 @@ export default function Dashboard() {
         db.fetchSheet(SHEET_NAMES.PAYMENTS),
       ]);
       
-      // Filter by user if not admin
-      const userInvoices = user.role === 'admin' ? inv : inv.filter(i => i.created_by === user.id);
+      // Filter by company/user if not admin
+      const isAdm = user?.role === 'admin' || user?.username === 'admin@invoice.com';
+      const userInvoices = isAdm 
+        ? inv.filter(i => i.id) 
+        : inv.filter(i => i.id && ((i.company_id && String(i.company_id) === String(user.company_id)) || i.created_by === user.id));
+      
+      const userCustomers = isAdm
+        ? cust.filter(c => c.id)
+        : cust.filter(c => c.id && ((c.company_id && String(c.company_id) === String(user.company_id)) || c.created_by === user.id));
+
       setInvoices(userInvoices);
       setInvoiceItems(items.filter(i => i.id));
-      setCustomers(cust);
+      setCustomers(userCustomers);
       setPayments(pay);
     } catch (error) {
       console.error('Failed to load dashboard data:', error);

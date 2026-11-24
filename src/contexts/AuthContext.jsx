@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import authService from '../services/authService';
+import apiClient from '../services/apiClient';
 import db, { SHEET_NAMES } from '../services/googleSheets';
 
 const AuthContext = createContext(null);
@@ -24,10 +25,18 @@ export function AuthProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    // Check for existing session
+    // Check for existing session and verify JWT token exists
+    const token = apiClient.getToken();
     const currentUser = authService.getCurrentUser();
-    if (currentUser) {
+
+    if (currentUser && !token) {
+      // Legacy session without JWT token: clear it so user logs in cleanly with a JWT token
+      authService.logout();
+      setUser(null);
+    } else if (currentUser && token) {
       setUser(currentUser);
+    } else {
+      setUser(null);
     }
 
     const savedCompanyId = localStorage.getItem(ACTIVE_COMPANY_KEY);
@@ -41,6 +50,15 @@ export function AuthProvider({ children }) {
       setLoading(false);
     });
   }, [loadCompanies]);
+
+  useEffect(() => {
+    const handleUnauthorized = () => {
+      authService.logout();
+      setUser(null);
+    };
+    window.addEventListener('auth-unauthorized', handleUnauthorized);
+    return () => window.removeEventListener('auth-unauthorized', handleUnauthorized);
+  }, []);
 
   const switchCompany = useCallback((companyId) => {
     setActiveCompanyId(String(companyId));
@@ -122,7 +140,7 @@ export function AuthProvider({ children }) {
     isSuperAdmin,
     isAdmin,
     isClient,
-    isAuthenticated: !!user,
+    isAuthenticated: !!user && !!apiClient.getToken(),
   };
 
   return (
