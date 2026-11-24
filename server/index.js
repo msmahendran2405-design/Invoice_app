@@ -45,9 +45,9 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-app.listen(PORT, '127.0.0.1', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`=======================================================`);
-  console.log(`🚀 Secure JWT API Server running on http://127.0.0.1:${PORT}`);
+  console.log(`🚀 Secure JWT API Server running on port ${PORT}`);
   console.log(`🔒 All /api/data/* endpoints secured with JWT tokens`);
   console.log(`📊 Google Sheets sync proxy active`);
   console.log(`=======================================================`);
